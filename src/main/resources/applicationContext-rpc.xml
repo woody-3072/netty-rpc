@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 	xmlns="http://www.springframework.org/schema/beans" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       	xmlns:rpc="http://www.woody.cn/rpc"
+       		xsi:schemaLocation="http://www.springframework.org/schema/beans  
+       		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	 		http://www.woody.cn/rpc	
+	 		http://www.woody.cn/rpc/rpc.xsd"
+       	default-lazy-init="true">
+    <description>支付中心服务发布</description>
+
+    <rpc:registry address="127.0.0.1:23456" port="12345" />
+
+    <!-- 用rpc协议在30600端口暴露服务 
+    	<rpc:application name="pay-api-server"/>
+	    <rpc:protocol name="rpc" port="30666" dispather="all" threadpool="cached" threads="5000"/>
+	-->
+	<!-- 暴露的服务  -->
+	<!-- 接入支付网关 -->
+    <rpc:service interface="com.yonghui.pay.IPayService" ref="payService" />
+    <rpc:service interface="com.yonghui.pay.IBillService" ref="billService"/>
+    <rpc:service interface="com.yonghui.pay.IPaymentService" ref="paymentService"/>
+    <rpc:service interface="com.yonghui.pay.IPayErrorlogService" ref="payErrorlogService"/>
+                   
+    <rpc:reference id="eventMessageService" interface="com.yonghui.message.bridge.api.EventMessageService" timeout="15"/>
+</beans>
