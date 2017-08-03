@@ -20,10 +20,12 @@ public class RMessageEncoder extends MessageToByteEncoder<RMessage> {
 		if (msg == null || msg.getBody() == null) {
 			System.out.println("消息发送失败，消息格式错误");
 		} else {
+			System.out.println("连接信息 : " + ctx.channel());
+			System.out.println("发送Registry消息：" + msg);
 			out.writeByte(msg.getType());
 			String json = JSONObject.toJSONString(msg.getBody());
 			byte[] body = json.getBytes();
-			out.writeInt(body.length);
+			out.writeMedium(body.length);
 			out.writeBytes(body);
 		}
 	}

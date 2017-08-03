@@ -40,6 +40,7 @@ public class MessageSendHandler extends SimpleChannelInboundHandler<RpcMessage> 
         // 通过messageId 拿到回调
         Callback callback = mapCallback.get(messageId);
         if (callback != null) {
+        	System.out.println("收到消息 ：" + msg);
             mapCallback.remove(messageId);
             callback.setResponse((Response) msg.getBody());
         }

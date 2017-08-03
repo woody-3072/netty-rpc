@@ -16,14 +16,7 @@ public class RpcMessage {
 	private RpcMessage body;				// 消息体
 	
 	public static RpcMessage build(byte type, String messageId, RpcMessage body) {
-		return new RpcMessage(type, messageId, body);
-	}
-	
-	protected RpcMessage(){}
-	private RpcMessage(byte type, String messageId, RpcMessage body) {
-		this.type = type;
-		this.messageId = messageId;
-		this.body = body;
+		return new RpcMessage().setType(type).setBody(body).setMessageId(messageId);
 	}
 
 	/**
@@ -36,11 +29,10 @@ public class RpcMessage {
 	 * @author woody
 	 * @return
 	 */
-	public String getInterfaceName() {
+	public String interfaceName() {		// getInterfaceName  序列化会发生空指针
 		return ((Request)body).getInterfaceName();
 	}
-	
-	public Request getRequest() {
+	public Request request() {
 		return type == EnumMsgType.REQUEST.getType() ? (Request) body : null;
 	}
 	
@@ -52,6 +44,18 @@ public class RpcMessage {
 	}
 	public byte getType() {
 		return type;
+	}
+	public RpcMessage setType(byte type) {
+		this.type = type;
+		return this;
+	}
+	public RpcMessage setMessageId(String messageId) {
+		this.messageId = messageId;
+		return this;
+	}
+	public RpcMessage setBody(RpcMessage body) {
+		this.body = body;
+		return this;
 	}
 
 	public String toString() {

@@ -29,11 +29,11 @@ public class ServiceInvokeTask implements Callable<RpcMessage> {
 	
 	// 调用方法  返回结果
 	public RpcMessage call() throws Exception {
-		if (msg == null || msg.getRequest() == null) {
+		if (msg == null || msg.request() == null) {
 			return RpcMessage.build(EnumMsgType.RESPONSE.getType(), msg.getMessageId(), Response.buildError("错误的请求！"));
 		} else {
 			try {
-				Request req = msg.getRequest();
+				Request req = msg.request();
 				
 				MethodInvoker invoke = new MethodInvoker();
 				invoke.setTargetObject(service.get(req.getInterfaceName()));

@@ -22,6 +22,7 @@
 			<xsd:complexContent>
 				<xsd:extension base="beans:identifiedType">
 					<xsd:attribute name="address" type="xsd:string" use="required"/>
+					<xsd:attribute name="port" type="xsd:int" use="required"/>
 				</xsd:extension>
 			</xsd:complexContent>
 		</xsd:complexType>

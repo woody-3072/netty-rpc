@@ -1,10 +1,15 @@
-package cn.woody.rpc.Reference;
+package cn.woody.test;
 
 import java.util.concurrent.TimeUnit;
 
+import com.alibaba.fastjson.JSONObject;
+
 import cn.woody.core.model.Callback;
+import cn.woody.core.model.Request;
+import cn.woody.core.model.Response;
 import cn.woody.rpc.MessageDecoder;
 import cn.woody.rpc.MessageEncoder;
+import cn.woody.rpc.Reference.MessageSendHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -24,14 +29,14 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  * CreateDate:2017年8月1日 上午10:15:48 
  * @author woody
  */
-public class ReferenceConnection implements Runnable {
+public class TestReference implements Runnable {
 	private static EventLoopGroup client = new NioEventLoopGroup();
-	private static MessageSendHandler handler;
 
 	private String address;				// 服务端发布接口网络地址
 	private String serverIP; private int serverPort;		// ip 端口
+	private MessageSendHandler handler;
 	
-	public ReferenceConnection(String address) {
+	public TestReference(String address) {
 		this.address = address;
 		this.serverIP = address.split(":")[0];
 		this.serverPort = Integer.parseInt(address.split(":")[1]);
@@ -86,21 +91,16 @@ public class ReferenceConnection implements Runnable {
 			run();
 		}
 	}
-
-	/**
-	 * 关闭通道 资源
-	 * 
-	 * Title: close<br>
-	 * Description: close<br>
-	 * CreateDate: 2017年8月1日 上午11:50:51<br>
-	 * @category close 
-	 * @author woody
-	 */
-	public void close() {
-		handler.close();  	// 关闭通道
-		client.shutdownGracefully();	// 关闭连接
-	}
 	
+	public static void main(String[] args) {
+		Request req = Request.build("aaa", "bbb", null);
+		System.out.println(JSONObject.toJSONString(req));
+		Response resp = Response.buildSuccess("OK");
+		System.out.println(JSONObject.toJSONString(resp));
+		
+//		new TestReference("127.0.0.1:12345").run();
+	}
+
 	/**
 	 * 发送请求
 	 * 

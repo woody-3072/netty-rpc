@@ -2,7 +2,7 @@ package cn.woody.rpc.Reference;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -29,9 +29,9 @@ public class Reference {
 	private final Map<String, ReferenceConnection> handlers = new HashMap<>();	// 所有消费者和提供者建立的tcp连接通道   key address:ip+port   value channel
 	
 	// 一对多映射
-	private final Map<String, List<String>> mapping = new HashMap<>();		// 多对多映射   key interfaceName   value addresses
+	private final Map<String, Set<String>> mapping = new HashMap<>();		// 多对多映射   key interfaceName   value addresses
 	
-	ExecutorService executor = Executors.newCachedThreadPool();
+	private static final ExecutorService executor = Executors.newCachedThreadPool();
 	
 	Lock lock = new ReentrantLock();
 	
@@ -49,12 +49,13 @@ public class Reference {
 	 * @param msg  注册中心对当前接口的所有的提供的发布者的信息  所以 直接覆盖即可
 	 */
 	public void connect(ReferenceConnectionRMessage msg) {
+		System.out.println("reference 收到服务者信息，开始创建tcp : " + msg); 
 		if (msg == null) {
 			System.out.println("消费者创建连接消息，读取到消息为空！");
 		} else {
 			// 列出新的服务提供者列表   和此前的服务提供者old 
-			List<String> oldAddresses = mapping.get(msg.getInterfaceName());
-			List<String> newAddresses = msg.getAddresses();
+			Set<String> oldAddresses = mapping.get(msg.getInterfaceName());
+			Set<String> newAddresses = msg.getAddresses();
 			try {
 				lock.lock();
 				mapping.put(msg.getInterfaceName(), msg.getAddresses());	// 同步最新的服务提供者信息
@@ -85,7 +86,7 @@ public class Reference {
 		if (handlers.containsKey(address))			// 如果已经包含
 			return;
 		else {			// 如果没有包含
-			ReferenceConnection conn = new ReferenceConnection(address, executor);
+			ReferenceConnection conn = new ReferenceConnection(address);
 			handlers.put(address, conn);
 			executor.execute(conn);		// 开始线程 维持连接
 		}
@@ -116,7 +117,7 @@ public class Reference {
 	 * @return
 	 */
 	public Callback sendRequest(RpcMessage msg) {
-		List<String> address = mapping.get(msg.getInterfaceName());			// 获取可用服务器列表
+		Set<String> address = mapping.get(msg.interfaceName());			// 获取可用服务器列表
 		return send(getConnect(address), msg);
 	}
 	
@@ -131,8 +132,28 @@ public class Reference {
 	 * @author woody
 	 * @return
 	 */
-	private ReferenceConnection getConnect(List<String> address) {
-		return handlers.get(address.get(0));
+	private ReferenceConnection getConnect(Set<String> addresses) {
+		if (addresses == null || addresses.size() == 0) {
+			return null;
+		} else {
+			ReferenceConnection conn = null;
+			for (Iterator<String> it = addresses.iterator(); it.hasNext();) {
+				String address = it.next();
+				if (handlers.containsKey(address)) {
+					if(handlers.get(address) == null) {
+						handlers.remove(address);
+						addresses.remove(address);
+					} else {
+						conn = handlers.get(address);
+						break;
+					}
+				} else {
+					addresses.remove(address);
+				}
+			}
+			
+			return conn;
+		}
 	}
 
 	/**
@@ -175,6 +196,19 @@ public class Reference {
 		});
 	}
 	
+	/**
+	 * 添加消费者信息
+	 * 
+	 * Title: putReference<br>
+	 * Description: putReference<br>
+	 * CreateDate: 2017年8月3日 下午12:37:19<br>
+	 * @category putReference 
+	 * @author woody
+	 * @param interfaceName
+	 */
+	public void putReference(String interfaceName) {
+		references.add(interfaceName);
+	}
 	public Set<String> getReference() {
 		return references;
 	}

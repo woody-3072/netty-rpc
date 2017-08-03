@@ -41,6 +41,8 @@ public class RMessageDecoder extends LengthFieldBasedFrameDecoder {
 			ByteBuf bodyBuf = frame.readBytes(length);  
 			bodyBuf.readBytes(body);		// 将缓冲区的数据读取到byte数组中
 			
+			System.out.println("收到Registry消息：" + new String(body));
+			
 			if (type == EnumRMsgType.SERVICE.getType()) {
 				return RMessage.build(type, JSONObject.parseObject(new String(body), ServiceRMessage.class));
 			} else if (type == EnumRMsgType.REFERENCE.getType()) {

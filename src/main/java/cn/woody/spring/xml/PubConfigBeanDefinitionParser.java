@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
  * CreateDate:2017年7月27日 下午5:02:33 
  * @author woody
  */
-public class ReferenceBeanDefinitionParser extends AbstractSingleBeanDefinitionParser  {
+public class PubConfigBeanDefinitionParser extends AbstractSingleBeanDefinitionParser  {
 
 	protected Class<?> getBeanClass(Element element) {
 		return ReferenceBean.class;

@@ -22,6 +22,7 @@ public class MessageEncoder extends MessageToByteEncoder<RpcMessage> {
 		if (msg == null || msg.getBody() == null) {
 			System.out.println("this message is null");
 		} else {
+			System.out.println("发送RPC消息：" + msg + " ctx :" + ctx.channel());
 			out.writeByte(msg.getType());
 			out.writeBytes(msg.getMessageId().getBytes());
 			String json = JSONObject.toJSONString(msg.getBody());

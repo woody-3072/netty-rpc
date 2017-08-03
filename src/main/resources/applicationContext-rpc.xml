@@ -9,18 +9,18 @@
        	default-lazy-init="true">
     <description>支付中心服务发布</description>
 
-    <rpc:registry address="127.0.0.1:23456" port="12345" />
 
     <!-- 用rpc协议在30600端口暴露服务 
     	<rpc:application name="pay-api-server"/>
 	    <rpc:protocol name="rpc" port="30666" dispather="all" threadpool="cached" threads="5000"/>
+    <rpc:reference id="eventMessageService" interface="com.yonghui.message.bridge.api.EventMessageService" timeout="15"/>
 	-->
 	<!-- 暴露的服务  -->
 	<!-- 接入支付网关 -->
-    <rpc:service interface="com.yonghui.pay.IPayService" ref="payService" />
-    <rpc:service interface="com.yonghui.pay.IBillService" ref="billService"/>
-    <rpc:service interface="com.yonghui.pay.IPaymentService" ref="paymentService"/>
-    <rpc:service interface="com.yonghui.pay.IPayErrorlogService" ref="payErrorlogService"/>
-                   
-    <rpc:reference id="eventMessageService" interface="com.yonghui.message.bridge.api.EventMessageService" timeout="15"/>
+    <bean id="add" class="cn.woody.test.server.Add"/>
+    <rpc:service id="a" interface="cn.woody.test.server.IAdd" ref="add"/>
+    <bean id="print" class="cn.woody.test.server.Print"/>
+    <rpc:service id="b" interface="cn.woody.test.server.IPrint" ref="print"/>
+    
+    <rpc:registry id="server" address="127.0.0.1:23456" port="12345" />
 </beans>

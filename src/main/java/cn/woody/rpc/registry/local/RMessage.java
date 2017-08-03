@@ -1,6 +1,5 @@
 package cn.woody.rpc.registry.local;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,14 +20,15 @@ public class RMessage {
 	private RMessage body;			// 消息内容  
 	
 	public static RMessage build(byte type, RMessage body) {
-		return new RMessage(type, body);
+		return new RMessage().setType(type).setBody(body);
 	}
-	private RMessage(byte type, RMessage body2) {
-		this.body = body2;
-		this.type = type;
-	}
-	protected RMessage(){}
 	
+	public ServiceRMessage getServiceRMessage() {
+		return EnumRMsgType.SERVICE.getType() == type ? (ServiceRMessage) body : null;
+	}
+	public ReferenceRMessage getReferenceRMessage() {
+		return EnumRMsgType.REFERENCE.getType() == type ? (ReferenceRMessage) body : null;
+	}
 	public ReferenceConnectionRMessage getReferenceConnectionRMessage() {
 		return EnumRMsgType.REFERENCECONN.getType() == type ? (ReferenceConnectionRMessage) body : null;
 	}
@@ -36,16 +36,22 @@ public class RMessage {
 	public byte getType() {
 		return type;
 	}
-	public void setType(byte type) {
+	public RMessage setType(byte type) {
 		this.type = type;
+		return this;
+	}
+	public RMessage setBody(RMessage body) {
+		this.body = body;
+		return this;
 	}
 	public RMessage getBody() {
 		return body;
 	}
-	public void setBody(RMessage body) {
-		this.body = body;
-	}
 	
+	public String toString() {
+		return "RMessage [type=" + type + ", body=" + body + "]";
+	}
+
 	/**
 	 * 	 * 注册服务发布服务       list<string> interface   adress ip:port
 	 * Title: ServiceRMessage<br> 
@@ -58,24 +64,24 @@ public class RMessage {
 		private String address;
 		
 		public static ServiceRMessage build(Set<String> interfaceNames, String address) {
-			return new ServiceRMessage(interfaceNames, address);
+			return new ServiceRMessage().setAddress(address).setInterfaceNames(interfaceNames);
 		}
-		private ServiceRMessage(Set<String> interfaceNames, String address) {
-			this.interfaceNames = interfaceNames;
-			this.address = address;
-		}
-		
 		public Set<String> getInterfaceNames() {
 			return interfaceNames;
 		}
-		public void setInterfaceNames(Set<String> interfaceNames) {
+		public ServiceRMessage setInterfaceNames(Set<String> interfaceNames) {
 			this.interfaceNames = interfaceNames;
+			return this;
 		}
 		public String getAddress() {
 			return address;
 		}
-		public void setAddress(String address) {
+		public ServiceRMessage setAddress(String address) {
 			this.address = address;
+			return this;
+		}
+		public String toString() {
+			return "ServiceRMessage [interfaceNames=" + interfaceNames + ", address=" + address + "]";
 		}
 	}
 	
@@ -90,16 +96,17 @@ public class RMessage {
 		private Set<String> interfaceNames;
 		
 		public static ReferenceRMessage build(Set<String> interfaceNames) {
-			return new ReferenceRMessage(interfaceNames);
+			return new ReferenceRMessage().setInterfaceNames(interfaceNames);
 		}
-		private ReferenceRMessage(Set<String> interfaceNames) {
+		public ReferenceRMessage setInterfaceNames(Set<String> interfaceNames) {
 			this.interfaceNames = interfaceNames;
+			return this;
 		}
 		public Set<String> getInterfaceNames() {
 			return interfaceNames;
 		}
-		public void setInterfaceNames(Set<String> interfaceNames) {
-			this.interfaceNames = interfaceNames;
+		public String toString() {
+			return "ReferenceRMessage [interfaceNames=" + interfaceNames + "]";
 		}
 	}
 	
@@ -112,27 +119,28 @@ public class RMessage {
 	 */
 	public static class ReferenceConnectionRMessage extends RMessage {
 		private String interfaceName;
-		private List<String> addresses;
+		private Set<String> addresses;
 		
-		public static ReferenceConnectionRMessage build(String interfaceName, List<String> addresses) {
-			return new ReferenceConnectionRMessage(interfaceName, addresses);
+		public static ReferenceConnectionRMessage build(String interfaceName, Set<String> addresses) {
+			return new ReferenceConnectionRMessage().setInterfaceName(interfaceName).setAddresses(addresses);
 		}
-		private ReferenceConnectionRMessage(String interfaceName, List<String> addresses) {
+		
+		public ReferenceConnectionRMessage setInterfaceName(String interfaceName) {
 			this.interfaceName = interfaceName;
-			this.addresses = addresses;
+			return this;
 		}
-		
+		public ReferenceConnectionRMessage setAddresses(Set<String> addresses) {
+			this.addresses = addresses;
+			return this;
+		}
 		public String getInterfaceName() {
 			return interfaceName;
 		}
-		public void setInterfaceName(String interfaceName) {
-			this.interfaceName = interfaceName;
-		}
-		public List<String> getAddresses() {
+		public Set<String> getAddresses() {
 			return addresses;
 		}
-		public void setAddresses(List<String> addresses) {
-			this.addresses = addresses;
+		public String toString() {
+			return "ReferenceConnectionRMessage [interfaceName=" + interfaceName + ", addresses=" + addresses + "]";
 		}
 	}
 	
@@ -141,7 +149,7 @@ public class RMessage {
 		REFERENCE((byte)2, "订阅注册消息"),
 		REFERENCECONN((byte)3, "订阅获取连接消息");
 		
-		private byte type;
+		private final byte type;
 		private String desc;
 		
 		public byte getType() {

@@ -35,7 +35,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  * @author woody
  */
 public class Service {
-	private int port = 9999;			// 默认端口号  9999
 	// 接受请求线程池
 	EventLoopGroup boss = new NioEventLoopGroup();
 	// io处理线程池
@@ -43,8 +42,8 @@ public class Service {
 	private final Map<String, Object> service = new HashMap<>();	// key interfaceName value ref
 	// 执行任务的线程
 	private static volatile ListeningExecutorService threadPoolExecutor = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
-	
-	public void start() {
+
+	public void start(int port) {
 		if (service.size() > 0) {
 			ServerBootstrap server = new ServerBootstrap();
 			server.group(boss, work)
@@ -57,8 +56,8 @@ public class Service {
 				protected void initChannel(SocketChannel ch) throws Exception {
 					ch.pipeline()
 					// 编解码
-					.addLast(new MessageDecoder(1024 * 1024, 37, 4))		// 起始第一位是类型  偏移量是36  用于放messageId 偏移位置4  存length
 					.addLast(new MessageEncoder())
+					.addLast(new MessageDecoder(1024 * 1024, 36, 4))		// 起始第一位是类型  偏移量是36  用于放messageId 偏移位置4  存length
 					.addLast(new MessageResvHandler(service));
 				}
 			})
@@ -66,13 +65,18 @@ public class Service {
 			
 			try {
 				ChannelFuture f = server.bind(port).sync();
-				f.channel().closeFuture().sync().addListener(new ChannelFutureListener() {
+				System.out.println("Service started and Listener on port : " + port);
+				
+				// 同步连接  异步监听
+				f.channel().closeFuture().addListener(new ChannelFutureListener() {
 					public void operationComplete(ChannelFuture future) throws Exception {
 						System.out.println("server is closed complete!");
 					}
 				});
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				System.out.println("服务发布者启动失败！");
+				System.exit(1);
 			}
 		} else {
 			System.out.println("此项目没有需要发布的服务");
@@ -95,7 +99,7 @@ public class Service {
 			public void onSuccess(RpcMessage result) {
 				ctx.writeAndFlush(result).addListener(new ChannelFutureListener() {
 					public void operationComplete(ChannelFuture future) throws Exception {
-						System.out.println("成功处理request请求并返回完成。" + task);
+						System.out.println("成功处理request请求 : " + task + " 并返回完成。" + result);
 					}
 				});
 			}
@@ -126,8 +130,5 @@ public class Service {
 	}
 	public Set<String> getService() {
 		return service.keySet();
-	}
-	public void setPort(int port) {
-		this.port = port;
 	}
 }

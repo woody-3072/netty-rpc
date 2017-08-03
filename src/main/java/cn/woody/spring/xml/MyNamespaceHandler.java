@@ -2,8 +2,6 @@ package cn.woody.spring.xml;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
-import cn.woody.rpc.RpcContainer;
-
 /**
  * 读取spring配置文件
  * 
@@ -25,6 +23,8 @@ public class MyNamespaceHandler extends NamespaceHandlerSupport {
 		registerBeanDefinitionParser("reference", new ReferenceBeanDefinitionParser());
 		
 		// 开始启动
-		RpcContainer.instance().go();
+//		RpcContainer.instance().go();
 	}
+	
+	
 }

@@ -33,8 +33,9 @@ public interface Registry {
 	 * @category service 
 	 * @author woody 
 	 * @param interfaces 待发布的服务
+	 * @param port 服务端口
 	 */
-	void service(Set<String> interfaces);
+	void service(Set<String> interfaces, int port);
 
 	/**
 	 * 服务消费者发布
@@ -59,5 +60,15 @@ public interface Registry {
 	 */
 	void destroy();
 	
-	void setInfo(String address, int serverPort);
+	/**
+	 * 填充注册中心
+	 * 
+	 * Title: setInfo<br>
+	 * Description: setInfo<br>
+	 * CreateDate: 2017年8月3日 下午1:31:32<br>
+	 * @category setInfo 
+	 * @author woody
+	 * @param address
+	 */
+	void setInfo(String address);
 }

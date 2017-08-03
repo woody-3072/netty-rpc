@@ -21,11 +21,11 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
  */
 public class MessageDecoder extends LengthFieldBasedFrameDecoder {
 
-	private int lengthFieldOffset;		// length起始偏移量
+	private int messageLength;			// messageId length
 	
-	public MessageDecoder(int maxFrameLength, int lengthFieldOffset, int lengthFieldLength) {
-		super(maxFrameLength, lengthFieldOffset, lengthFieldLength);		// 帧最大长度    length属性起始偏移量   length属性长度
-		this.lengthFieldOffset = lengthFieldOffset;
+	public MessageDecoder(int maxFrameLength, int messageLength, int lengthFieldLength) {
+		super(maxFrameLength, messageLength + 1, lengthFieldLength);		// 帧最大长度    length属性起始偏移量   length属性长度
+		this.messageLength = messageLength;
 	}
 
 	// 解码
@@ -39,8 +39,8 @@ public class MessageDecoder extends LengthFieldBasedFrameDecoder {
 			// type
 			byte type = frame.readByte();
 			// MessageId
-			ByteBuf buf = frame.readBytes(lengthFieldOffset);
-			byte[] messageId = new byte[lengthFieldOffset];
+			ByteBuf buf = frame.readBytes(messageLength);
+			byte[] messageId = new byte[messageLength];
 			buf.readBytes(messageId);	
 			// length
 			int length = frame.readInt();
@@ -49,6 +49,7 @@ public class MessageDecoder extends LengthFieldBasedFrameDecoder {
 			ByteBuf bodyBuf = frame.readBytes(length);
 			bodyBuf.readBytes(body);
 			
+			System.out.println("收到RPC消息：" + new String(body));
 			return RpcMessage.build(
 					type, 
 					new String(messageId), 

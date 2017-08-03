@@ -34,8 +34,9 @@ public class Callback {
 	 * @category start 
 	 * @author woody
 	 * @return 
+	 * @throws Exception 
 	 */
-	public Object start(int timeout) {
+	public Object start(int timeout) throws Exception {
 		try {
 			lock.lock();
 			if (response == null) {
@@ -46,8 +47,13 @@ public class Callback {
 		} finally {
 			lock.unlock();
 		}
+		if (response == null) {
+			throw new Exception("读取超时");
+		} else if(response.getData() == null) {
+			throw new Exception(response.getErrorMessage());
+		}
 		
-		return response;
+		return response.getData();
 	}
 	
 	/**

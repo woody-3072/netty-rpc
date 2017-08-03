@@ -13,30 +13,25 @@ public class Response extends RpcMessage {
 	private Object data;				// 数据
 	
 	public static Response buildSuccess (Object data) {
-		return new Response(data);
+		return new Response().setData(data);
 	}
 	public static Response buildError(String error) {
-		return new Response(error);
-	}
-	
-	private Response(String error) {
-		this.errorMessage = error;
-	}
-	private Response(Object data) {
-		this.data = data;
+		return new Response().setErrorMessage(error);
 	}
 	
 	public String getErrorMessage() {
 		return errorMessage;
 	}
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
 	public Object getData() {
 		return data;
 	}
-	public void setData(Object data) {
+	public Response setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+		return this;
+	}
+	public Response setData(Object data) {
 		this.data = data;
+		return this;
 	}
 	public String toString() {
 		return "Response [errorMessage=" + errorMessage + ", data=" + data + "]";

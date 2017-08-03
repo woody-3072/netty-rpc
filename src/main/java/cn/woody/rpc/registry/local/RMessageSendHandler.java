@@ -15,7 +15,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * CreateDate:2017年7月31日 下午6:16:02 
  * @author woody
  */
-public class RMessageReadHandler extends SimpleChannelInboundHandler<RMessage> {
+public class RMessageSendHandler extends SimpleChannelInboundHandler<RMessage> {
     private volatile Channel channel;
 
     public Channel getChannel() {
