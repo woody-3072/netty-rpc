@@ -1,40 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xsd:schema xmlns="http://www.woody.cn/rpc"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-	xmlns:beans="http://www.springframework.org/schema/beans"
-	xmlns:tool="http://www.springframework.org/schema/tool"
-	targetNamespace="http://www.woody.cn/rpc">
-	
-	<xsd:import namespace="http://www.springframework.org/schema/beans"/>
+<xs:schema xmlns="http://www.woody.cn/rpc" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans" xmlns:tool="http://www.springframework.org/schema/tool" targetNamespace="http://www.woody.cn/rpc">
+	<!-- 导入spring xs -->
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+	<xs:import namespace="http://www.springframework.org/schema/beans" />
+	<xs:import namespace="http://www.springframework.org/schema/tool" />
 
-	<xsd:element name="service">
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="beans:identifiedType">
-					<xsd:attribute name="interface" type="xsd:string" use="required"/>
-					<xsd:attribute name="ref" type="xsd:string" use="required"/>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-	<xsd:element name="registry">
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="beans:identifiedType">
-					<xsd:attribute name="address" type="xsd:string" use="required"/>
-					<xsd:attribute name="port" type="xsd:int" use="required"/>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-	<xsd:element name="reference">
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="beans:identifiedType">
-					<xsd:attribute name="interface" type="xsd:string" use="required"/>
-					<xsd:attribute name="timeout" type="xsd:int" use="required"/>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-</xsd:schema>
+	<xs:annotation>
+		<xs:documentation><![CDATA[ Namespace support for the netty-rpc framework. ]]></xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="registryType">
+		<xs:complexContent>
+			<!-- 引用spring的 bean identifiedType -->
+			<xs:extension base="beans:identifiedType">
+				<xs:attribute name="address" type="xs:string" use="required" />
+				<xs:attribute name="port" type="xs:int" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="serviceType">
+		<xs:attribute name="id" type="xs:ID" />
+		<xs:attribute name="interface" type="xs:token" use="required">
+			<xs:annotation>
+				<xs:documentation><![CDATA[ Defines the interface to advertise for this service in the service registry. ]]></xs:documentation>
+				<xs:appinfo>
+					<tool:annotation>
+						<tool:expected-type type="java.lang.Class" />
+					</tool:annotation>
+				</xs:appinfo>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ref" type="xs:string" use="required" />
+	</xs:complexType>
+
+	<xs:complexType name="referenceType">
+		<xs:complexContent>
+			<!-- 引用spring的 bean identifiedType -->
+			<xs:extension base="beans:identifiedType">
+				<xs:attribute name="interface" type="xs:token" use="required">
+					<xs:annotation>
+						<xs:documentation><![CDATA[ The service interface class name. ]]></xs:documentation>
+						<xs:appinfo>
+							<tool:annotation>
+								<tool:expected-type type="java.lang.Class" />
+							</tool:annotation>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="timeout" type="xs:int" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="registry" type="registryType">
+        <xs:annotation> 
+			<xs:documentation><![CDATA[ Registry config ]]></xs:documentation> 
+		</xs:annotation>
+    </xs:element>
+
+	<xs:element name="service" type="serviceType">
+        <xs:annotation> 
+			<xs:documentation><![CDATA[ Service config ]]></xs:documentation> 
+		</xs:annotation>
+    </xs:element>
+	
+	<xs:element name="reference" type="referenceType">
+        <xs:annotation> 
+			<xs:documentation><![CDATA[ Reference config ]]></xs:documentation> 
+		</xs:annotation>
+    </xs:element>
+</xs:schema>

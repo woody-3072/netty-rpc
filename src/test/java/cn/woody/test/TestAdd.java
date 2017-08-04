@@ -11,7 +11,8 @@ import cn.woody.test.server.IAdd;
 public class TestAdd {
 	@Test
 	public void test() throws InterruptedException {
-		 ApplicationContext ctx = new ClassPathXmlApplicationContext(new String[]{ "applicationContext-test-rpc.xml" });
+		 @SuppressWarnings("resource")
+		ApplicationContext ctx = new ClassPathXmlApplicationContext(new String[]{ "applicationContext-test-rpc.xml" });
 		 
 		 Thread.sleep(2000);
 		 System.out.println("------------------");

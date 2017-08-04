@@ -4,11 +4,9 @@
        	xmlns:rpc="http://www.woody.cn/rpc"
        		xsi:schemaLocation="http://www.springframework.org/schema/beans  
        		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-	 		http://www.woody.cn/rpc	
-	 		http://www.woody.cn/rpc/rpc.xsd"
+	 		http://www.woody.cn/rpc META-INF/rpc.xsd"
        	default-lazy-init="true">
     <description>支付中心服务发布</description>
-
 
     <!-- 用rpc协议在30600端口暴露服务 
     	<rpc:application name="pay-api-server"/>
@@ -16,11 +14,13 @@
     <rpc:reference id="eventMessageService" interface="com.yonghui.message.bridge.api.EventMessageService" timeout="15"/>
 	-->
 	<!-- 暴露的服务  -->
+
+    <rpc:registry id="server" address="127.0.0.1:23456" port="12345" />
+	
 	<!-- 接入支付网关 -->
     <bean id="add" class="cn.woody.test.server.Add"/>
     <rpc:service id="a" interface="cn.woody.test.server.IAdd" ref="add"/>
     <bean id="print" class="cn.woody.test.server.Print"/>
     <rpc:service id="b" interface="cn.woody.test.server.IPrint" ref="print"/>
     
-    <rpc:registry id="server" address="127.0.0.1:23456" port="12345" />
 </beans>
